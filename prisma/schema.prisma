@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+  SIMULATED
+}
+
+enum EmailType {
+  MANUAL
+  WELCOME
+  REVIEW_APPROVED
+}
+
+enum ImportFormat {
+  CSV
+  XLSX
+  XLS
+}
+
+model User {
+  id             String      @id @default(cuid())
+  name           String?
+  email          String      @unique
+  password       String
+  role           Role        @default(USER)
+  accounts       Account[]
+  sessions       Session[]
+  reviews        Review[]
+  emailLogs      EmailLog[]  @relation("EmailTriggeredBy")
+  importJobs     ImportJob[] @relation("ImportTriggeredBy")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Book {
+  id                   String   @id @default(cuid())
+  title                String
+  author               String
+  description          String
+  content              String
+  coverImage           String?
+  publisher            String?
+  publishedDate        String?
+  pageCount            Int?
+  categories           String[] @default([])
+  externalSource       String?
+  externalId           String?
+  externalRating       Float?
+  externalRatingsCount Int?
+  externalInfoLink     String?
+  externalPreviewLink  String?
+  reviews              Review[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  approved  Boolean  @default(true)
+  userId    String
+  bookId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, bookId])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([sessionToken])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model EmailLog {
+  id            String      @id @default(cuid())
+  toEmail       String
+  subject       String
+  body          String
+  status        EmailStatus
+  type          EmailType
+  errorMessage  String?
+  triggeredById String?
+  triggeredBy   User?       @relation("EmailTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  sentAt        DateTime?
+}
+
+model ImportJob {
+  id            String       @id @default(cuid())
+  fileName      String
+  format        ImportFormat
+  importedCount Int          @default(0)
+  updatedCount  Int          @default(0)
+  skippedCount  Int          @default(0)
+  notes         String?
+  triggeredById String?
+  triggeredBy   User?        @relation("ImportTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
+}

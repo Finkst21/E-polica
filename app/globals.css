@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 33% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 198 78% 31%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 28 89% 94%;
+    --secondary-foreground: 24 10% 10%;
+    --muted: 30 20% 94%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 11 89% 63%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 24 18% 88%;
+    --input: 24 18% 88%;
+    --ring: 198 78% 31%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 36 33% 96%;
+    --card: 222 38% 12%;
+    --card-foreground: 36 33% 96%;
+    --primary: 190 85% 52%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 222 27% 18%;
+    --secondary-foreground: 36 33% 96%;
+    --muted: 222 27% 16%;
+    --muted-foreground: 215 20% 70%;
+    --accent: 17 95% 58%;
+    --accent-foreground: 36 33% 96%;
+    --destructive: 0 63% 49%;
+    --destructive-foreground: 36 33% 96%;
+    --border: 222 20% 24%;
+    --input: 222 20% 24%;
+    --ring: 190 85% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at top, rgba(249, 115, 22, 0.14), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(14, 116, 144, 0.16), transparent 32%);
+  }
+}
+
+@layer components {
+  .container-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
