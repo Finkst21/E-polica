@@ -16,23 +16,23 @@ Sodobna in odzivna spletna aplikacija za branje, ocenjevanje in upravljanje knji
 
 ## Zagon
 
-1. Ustvari `.env` datoteko na podlagi `.env.example`.
+1. Ustvari `.env.local` datoteko na podlagi `.env.example`.
 2. Namesti odvisnosti:
 
 ```bash
 npm install
 ```
 
-3. Ustvari migracijo in posodobi bazo:
+3. Zazeni lokalno PostgreSQL bazo:
 
 ```bash
-npx prisma migrate dev
+npm run db:up
 ```
 
-4. Zazeni seed:
+4. Posodobi shemo baze in zazeni seed:
 
 ```bash
-npm run seed
+npm run db:setup
 ```
 
 5. Zazeni razvojni streznik:

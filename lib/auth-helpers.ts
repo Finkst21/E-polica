@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
 export async function requireUser() {
-  const session = await auth();
+  const session = await auth().catch(() => null);
 
   if (!session?.user) {
     redirect("/login");

@@ -3,16 +3,23 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 
 import { ImportForm } from "@/components/admin/import-form";
+import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminImportExportPage() {
-  const importJobs = await prisma.importJob.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 20
-  });
+  let databaseUnavailable = false;
+  const importJobs = await prisma.importJob
+    .findMany({
+      orderBy: { createdAt: "desc" },
+      take: 20
+    })
+    .catch(() => {
+      databaseUnavailable = true;
+      return [];
+    });
 
   return (
     <main className="space-y-8">
@@ -22,6 +29,8 @@ export default async function AdminImportExportPage() {
         </Badge>
         <h1 className="font-serif text-4xl font-bold">CSV, Excel in PDF porocila</h1>
       </div>
+
+      {databaseUnavailable ? <DatabaseUnavailableCard /> : null}
 
       <section className="grid gap-6 xl:grid-cols-2">
         <ImportForm />

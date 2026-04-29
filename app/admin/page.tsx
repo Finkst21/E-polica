@@ -3,6 +3,7 @@
 import { BookOpenText, ChartColumnIncreasing, Mail, MessageSquareMore, Upload, Users } from "lucide-react";
 
 import { ActivityChart } from "@/components/admin/activity-chart";
+import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { ReviewDistributionChart } from "@/components/admin/review-distribution-chart";
 import { ReviewModeration } from "@/components/admin/review-moderation";
 import { StatCard } from "@/components/stat-card";
@@ -42,6 +43,10 @@ export default async function AdminPage({
           </button>
         </form>
       </div>
+
+      {dashboard.databaseUnavailable ? (
+        <DatabaseUnavailableCard />
+      ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <StatCard title="Knjige" value={dashboard.stats.booksCount} description="Skupno knjig v katalogu." icon={BookOpenText} />

@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "db:up": "docker compose up -d db",
+    "db:setup": "prisma db push && npm run seed",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts"
   },

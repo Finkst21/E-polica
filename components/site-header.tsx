@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 export async function SiteHeader() {
-  const session = await auth();
+  const session = await auth().catch(() => null);
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (

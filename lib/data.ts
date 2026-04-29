@@ -3,6 +3,19 @@ import { subDays } from "date-fns";
 
 import { prisma } from "@/lib/prisma";
 
+type AdminDashboardBook = Prisma.BookGetPayload<{
+  include: {
+    reviews: true;
+  };
+}>;
+
+type AdminDashboardReview = Prisma.ReviewGetPayload<{
+  include: {
+    book: true;
+    user: true;
+  };
+}>;
+
 function getDateFilter(days?: number) {
   if (!days || days <= 0) {
     return undefined;
@@ -29,15 +42,17 @@ export async function getBooks({
       }
     : {};
 
-  const books = await prisma.book.findMany({
-    where,
-    include: {
-      reviews: {
-        where: { approved: true }
-      }
-    },
-    orderBy: sort === "title" ? { title: "asc" } : { createdAt: "desc" }
-  });
+  const books = await prisma.book
+    .findMany({
+      where,
+      include: {
+        reviews: {
+          where: { approved: true }
+        }
+      },
+      orderBy: sort === "title" ? { title: "asc" } : { createdAt: "desc" }
+    })
+    .catch(() => []);
 
   const enriched = books.map((book) => ({
     ...book,
@@ -56,15 +71,17 @@ export async function getBooks({
 }
 
 export async function getBookById(id: string) {
-  const book = await prisma.book.findUnique({
-    where: { id },
-    include: {
-      reviews: {
-        orderBy: { createdAt: "desc" },
-        include: { user: true }
+  const book = await prisma.book
+    .findUnique({
+      where: { id },
+      include: {
+        reviews: {
+          orderBy: { createdAt: "desc" },
+          include: { user: true }
+        }
       }
-    }
-  });
+    })
+    .catch(() => null);
 
   if (!book) {
     return null;
@@ -87,26 +104,45 @@ export async function getBookById(id: string) {
 export async function getAdminDashboard(period = 30) {
   const fromDate = getDateFilter(period);
 
-  const [books, users, reviews, pendingReviews, emailLogs, importJobs] = await Promise.all([
-    prisma.book.findMany({
+  let books: AdminDashboardBook[] = [];
+  let users: Prisma.UserGetPayload<Record<string, never>>[] = [];
+  let reviews: AdminDashboardReview[] = [];
+  let pendingReviews: AdminDashboardReview[] = [];
+  let emailLogs: Prisma.EmailLogGetPayload<Record<string, never>>[] = [];
+  let importJobs: Prisma.ImportJobGetPayload<Record<string, never>>[] = [];
+  let databaseUnavailable = false;
+
+  const handleUnavailable = () => {
+    databaseUnavailable = true;
+    return [];
+  };
+
+  books = await prisma.book
+    .findMany({
       include: {
         reviews: {
           where: { approved: true }
         }
       },
       orderBy: { createdAt: "desc" }
-    }),
-    prisma.user.findMany({
+    })
+    .catch(handleUnavailable);
+  users = await prisma.user
+    .findMany({
       orderBy: { createdAt: "desc" }
-    }),
-    prisma.review.findMany({
+    })
+    .catch(handleUnavailable);
+  reviews = await prisma.review
+    .findMany({
       include: {
         book: true,
         user: true
       },
       orderBy: { createdAt: "desc" }
-    }),
-    prisma.review.findMany({
+    })
+    .catch(handleUnavailable);
+  pendingReviews = await prisma.review
+    .findMany({
       where: { approved: false },
       include: {
         book: true,
@@ -114,16 +150,20 @@ export async function getAdminDashboard(period = 30) {
       },
       orderBy: { createdAt: "desc" },
       take: 8
-    }),
-    prisma.emailLog.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8
-    }),
-    prisma.importJob.findMany({
+    })
+    .catch(handleUnavailable);
+  emailLogs = await prisma.emailLog
+    .findMany({
       orderBy: { createdAt: "desc" },
       take: 8
     })
-  ]);
+    .catch(handleUnavailable);
+  importJobs = await prisma.importJob
+    .findMany({
+      orderBy: { createdAt: "desc" },
+      take: 8
+    })
+    .catch(handleUnavailable);
 
   const filteredUsers = fromDate ? users.filter((user) => user.createdAt >= fromDate) : users;
   const filteredReviews = fromDate ? reviews.filter((review) => review.createdAt >= fromDate) : reviews;
@@ -190,24 +230,27 @@ export async function getAdminDashboard(period = 30) {
     topBooks,
     pendingReviews,
     recentEmails: emailLogs,
-    recentImports: importJobs
+    recentImports: importJobs,
+    databaseUnavailable
   };
 }
 
 export async function getAdminAnalytics(period = 30) {
   const fromDate = getDateFilter(period);
-  const books = await prisma.book.findMany({
-    include: {
-      reviews: {
-        where: fromDate
-          ? {
-              approved: true,
-              createdAt: { gte: fromDate }
-            }
-          : { approved: true }
+  const books = await prisma.book
+    .findMany({
+      include: {
+        reviews: {
+          where: fromDate
+            ? {
+                approved: true,
+                createdAt: { gte: fromDate }
+              }
+            : { approved: true }
+        }
       }
-    }
-  });
+    })
+    .catch(() => []);
 
   const chartData = books
     .map((book) => {
@@ -243,23 +286,25 @@ export async function getAdminBooksTable({
   sort?: "newest" | "title" | "rating" | "external";
   external?: "all" | "synced" | "missing";
 }) {
-  const books = await prisma.book.findMany({
-    where: search
-      ? {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { author: { contains: search, mode: "insensitive" } },
-            { publisher: { contains: search, mode: "insensitive" } }
-          ]
+  const books = await prisma.book
+    .findMany({
+      where: search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { author: { contains: search, mode: "insensitive" } },
+              { publisher: { contains: search, mode: "insensitive" } }
+            ]
+          }
+        : undefined,
+      include: {
+        reviews: {
+          where: { approved: true }
         }
-      : undefined,
-    include: {
-      reviews: {
-        where: { approved: true }
-      }
-    },
-    orderBy: sort === "title" ? { title: "asc" } : { createdAt: "desc" }
-  });
+      },
+      orderBy: sort === "title" ? { title: "asc" } : { createdAt: "desc" }
+    })
+    .catch(() => []);
 
   let items = books.map((book) => ({
     ...book,
@@ -298,25 +343,27 @@ export async function getAdminUsersTable({
   role?: "all" | Role;
   sort?: "newest" | "name" | "reviews";
 }) {
-  const users = await prisma.user.findMany({
-    where: {
-      ...(role !== "all" ? { role } : {}),
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { email: { contains: search, mode: "insensitive" } }
-            ]
-          }
-        : {})
-    },
-    include: {
-      _count: {
-        select: { reviews: true }
-      }
-    },
-    orderBy: sort === "name" ? { name: "asc" } : { createdAt: "desc" }
-  });
+  const users = await prisma.user
+    .findMany({
+      where: {
+        ...(role !== "all" ? { role } : {}),
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { email: { contains: search, mode: "insensitive" } }
+              ]
+            }
+          : {})
+      },
+      include: {
+        _count: {
+          select: { reviews: true }
+        }
+      },
+      orderBy: sort === "name" ? { name: "asc" } : { createdAt: "desc" }
+    })
+    .catch(() => []);
 
   if (sort === "reviews") {
     return users.sort((a, b) => b._count.reviews - a._count.reviews);

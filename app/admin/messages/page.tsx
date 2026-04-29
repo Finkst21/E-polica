@@ -1,25 +1,33 @@
 export const dynamic = "force-dynamic";
 
 import { EmailForm } from "@/components/admin/email-form";
+import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminMessagesPage() {
-  const [users, emailLogs] = await Promise.all([
-    prisma.user.findMany({
+  let databaseUnavailable = false;
+  const handleUnavailable = () => {
+    databaseUnavailable = true;
+    return [];
+  };
+  const users = await prisma.user
+    .findMany({
       select: {
         id: true,
         name: true,
         email: true
       },
       orderBy: { createdAt: "desc" }
-    }),
-    prisma.emailLog.findMany({
+    })
+    .catch(handleUnavailable);
+  const emailLogs = await prisma.emailLog
+    .findMany({
       orderBy: { createdAt: "desc" },
       take: 20
     })
-  ]);
+    .catch(handleUnavailable);
 
   return (
     <main className="space-y-8">
@@ -29,6 +37,8 @@ export default async function AdminMessagesPage() {
         </Badge>
         <h1 className="font-serif text-4xl font-bold">Komunikacija s strankami</h1>
       </div>
+
+      {databaseUnavailable ? <DatabaseUnavailableCard /> : null}
 
       <EmailForm users={users} />
 

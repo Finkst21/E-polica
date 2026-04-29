@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, BookText, ChartNoAxesCombined, Shield } from "lucide-react";
 
 import { auth } from "@/auth";
+import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { HeroSection } from "@/components/sections/hero";
 import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
@@ -12,17 +13,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 export default async function HomePage() {
-  const session = await auth();
-  const [booksCount, usersCount, reviewsCount] = await Promise.all([
-    prisma.book.count(),
-    prisma.user.count(),
-    prisma.review.count()
-  ]);
+  const session = await auth().catch(() => null);
+  let databaseUnavailable = false;
+  const handleUnavailable = () => {
+    databaseUnavailable = true;
+    return 0;
+  };
+  const booksCount = await prisma.book.count().catch(handleUnavailable);
+  const usersCount = await prisma.user.count().catch(handleUnavailable);
+  const reviewsCount = await prisma.review.count().catch(handleUnavailable);
 
   return (
     <main className="pb-20">
       <HeroSection />
       <section className="container-shell space-y-8 py-10">
+        {databaseUnavailable ? (
+          <DatabaseUnavailableCard />
+        ) : null}
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Knjige v katalogu"
