@@ -27,8 +27,8 @@ export default async function BookDetailPage({
   }
 
   return (
-    <main className="container-shell grid gap-8 py-10 lg:grid-cols-[0.8fr_1.2fr]">
-      <aside className="space-y-6">
+    <main className="container-shell grid gap-6 py-6 lg:grid-cols-[320px_1fr]">
+      <aside className="space-y-4">
         <Card className="overflow-hidden">
           <div className="relative aspect-[3/4]">
             {book.coverImage ? (
@@ -39,9 +39,9 @@ export default async function BookDetailPage({
               </div>
             )}
           </div>
-          <CardContent className="space-y-4 p-6">
+          <CardContent className="space-y-4 p-4">
             <div>
-              <h1 className="font-serif text-4xl font-bold">{book.title}</h1>
+              <h1 className="text-3xl font-bold">{book.title}</h1>
               <p className="text-muted-foreground">{book.author}</p>
             </div>
             <p className="text-sm text-muted-foreground">{book.description}</p>
@@ -54,7 +54,7 @@ export default async function BookDetailPage({
         </Card>
 
         <Card>
-          <CardContent className="space-y-3 p-6 text-sm">
+          <CardContent className="space-y-3 p-4 text-sm">
             <p><strong>Zaloznik:</strong> {book.publisher ?? "-"}</p>
             <p><strong>Datum izdaje:</strong> {book.publishedDate ?? "-"}</p>
             <p><strong>Stevilo strani:</strong> {book.pageCount ?? "-"}</p>
@@ -71,15 +71,15 @@ export default async function BookDetailPage({
           <ReviewForm bookId={book.id} />
         ) : (
           <Card>
-            <CardContent className="p-6 text-sm text-muted-foreground">
+            <CardContent className="p-4 text-sm text-muted-foreground">
               Za oddajo ocene se prijavi v sistem.
             </CardContent>
           </Card>
         )}
       </aside>
-      <section className="space-y-8">
+      <section className="space-y-6">
         <Card>
-          <CardContent className="space-y-6 p-8">
+          <CardContent className="space-y-5 p-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CalendarDays className="h-4 w-4" />
               Dodano {format(book.createdAt, "dd.MM.yyyy")}
@@ -93,7 +93,7 @@ export default async function BookDetailPage({
         </Card>
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-serif text-3xl font-bold">Ocene bralcev</h2>
+            <h2 className="text-2xl font-bold">Ocene bralcev</h2>
             <div className="flex items-center gap-2 text-sm font-medium">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
               {formatRating(book.averageRating)}
@@ -103,14 +103,14 @@ export default async function BookDetailPage({
           <div className="grid gap-4">
             {book.approvedReviews.length === 0 ? (
               <Card>
-                <CardContent className="p-6 text-sm text-muted-foreground">
+                <CardContent className="p-4 text-sm text-muted-foreground">
                   Knjiga se nima objavljenih ocen.
                 </CardContent>
               </Card>
             ) : (
               book.approvedReviews.map((review) => (
                 <Card key={review.id}>
-                  <CardContent className="space-y-3 p-6">
+                  <CardContent className="space-y-3 p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2 text-sm">
                         <UserCircle2 className="h-4 w-4 text-primary" />

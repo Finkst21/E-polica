@@ -50,7 +50,7 @@ export function BookForm({ book }: BookFormProps) {
   }, [book, state]);
 
   return (
-    <form action={formAction} className="grid gap-4 rounded-[28px] border border-border/70 bg-card p-6">
+    <form action={formAction} className="grid gap-4 rounded-lg border border-border bg-card p-4">
       <input type="hidden" name="bookId" value={book?.id ?? ""} />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">

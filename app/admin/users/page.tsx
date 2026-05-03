@@ -18,12 +18,12 @@ export default async function AdminUsersPage({
   });
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <div className="space-y-3">
         <Badge variant="outline" className="w-fit">
           Upravljanje uporabnikov
         </Badge>
-        <h1 className="font-serif text-4xl font-bold">Filtriran pregled uporabnikov in vlog</h1>
+        <h1 className="text-3xl font-bold">Uporabniki</h1>
       </div>
 
       <Card>
@@ -36,19 +36,19 @@ export default async function AdminUsersPage({
               name="search"
               defaultValue={params.search ?? ""}
               placeholder="Ime ali email"
-              className="h-11 rounded-2xl border border-input bg-background px-4 text-sm"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
             />
-            <select name="role" defaultValue={params.role ?? "all"} className="h-11 rounded-2xl border border-input bg-background px-4 text-sm">
+            <select name="role" defaultValue={params.role ?? "all"} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="all">Vse vloge</option>
               <option value="USER">USER</option>
               <option value="ADMIN">ADMIN</option>
             </select>
-            <select name="sort" defaultValue={params.sort ?? "newest"} className="h-11 rounded-2xl border border-input bg-background px-4 text-sm">
+            <select name="sort" defaultValue={params.sort ?? "newest"} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="newest">Najnovejsi</option>
               <option value="name">Po imenu</option>
               <option value="reviews">Po stevilu ocen</option>
             </select>
-            <button type="submit" className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+            <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
               Filtriraj
             </button>
           </form>
@@ -73,7 +73,7 @@ export default async function AdminUsersPage({
                     <td className="py-4">{user.role}</td>
                     <td className="py-4">{user._count.reviews}</td>
                     <td className="py-4">
-                      <UserRoleForm userId={user.id} role={user.role} />
+                      <UserRoleForm userId={user.id} role={user.role === "ADMIN" ? "ADMIN" : "USER"} />
                     </td>
                   </tr>
                 ))}

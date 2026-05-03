@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import { EmailStatus, EmailType } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -8,7 +7,7 @@ type SendEmailInput = {
   subject: string;
   html: string;
   text?: string;
-  type: EmailType;
+  type: "MANUAL" | "WELCOME" | "REVIEW_APPROVED";
   triggeredById?: string;
 };
 
@@ -43,7 +42,7 @@ export async function sendTrackedEmail(input: SendEmailInput) {
         toEmail: input.to,
         subject: input.subject,
         body: input.html,
-        status: EmailStatus.SIMULATED,
+        status: "SIMULATED",
         type: input.type,
         triggeredById: input.triggeredById,
         sentAt: new Date()
@@ -65,7 +64,7 @@ export async function sendTrackedEmail(input: SendEmailInput) {
         toEmail: input.to,
         subject: input.subject,
         body: input.html,
-        status: EmailStatus.SENT,
+        status: "SENT",
         type: input.type,
         triggeredById: input.triggeredById,
         sentAt: new Date()
@@ -77,7 +76,7 @@ export async function sendTrackedEmail(input: SendEmailInput) {
         toEmail: input.to,
         subject: input.subject,
         body: input.html,
-        status: EmailStatus.FAILED,
+        status: "FAILED",
         type: input.type,
         errorMessage: error instanceof Error ? error.message : "Neznana napaka",
         triggeredById: input.triggeredById

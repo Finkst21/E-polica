@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean:next": "node scripts/clean-next-cache.mjs",
+    "predev": "npm run clean:next",
     "dev": "next dev",
+    "prebuild": "npm run clean:next",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:up": "docker compose up -d db",
-    "db:setup": "prisma db push && npm run seed",
+    "db:up": "echo SQLite baza ne potrebuje posebnega zagona.",
+    "db:setup": "prisma generate && node scripts/setup-sqlite.mjs && npm run seed",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts"
   },

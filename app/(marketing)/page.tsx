@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { ArrowRight, BookText, ChartNoAxesCombined, Shield } from "lucide-react";
 
-import { auth } from "@/auth";
 import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { HeroSection } from "@/components/sections/hero";
 import { StatCard } from "@/components/stat-card";
@@ -12,24 +11,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
+async function withFallback<T>(promise: Promise<T>, fallback: T) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeout = setTimeout(() => resolve(fallback), 1500);
+  });
+
+  return Promise.race([promise, timeoutPromise])
+    .catch(() => fallback)
+    .finally(() => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    });
+}
+
 export default async function HomePage() {
-  const session = await auth().catch(() => null);
   let databaseUnavailable = false;
   const handleUnavailable = () => {
     databaseUnavailable = true;
     return 0;
   };
-  const booksCount = await prisma.book.count().catch(handleUnavailable);
-  const usersCount = await prisma.user.count().catch(handleUnavailable);
-  const reviewsCount = await prisma.review.count().catch(handleUnavailable);
+  const [booksCount, usersCount, reviewsCount] = await Promise.all([
+    withFallback(prisma.book.count().catch(handleUnavailable), 0),
+    withFallback(prisma.user.count().catch(handleUnavailable), 0),
+    withFallback(prisma.review.count().catch(handleUnavailable), 0)
+  ]);
+
+  databaseUnavailable = databaseUnavailable || booksCount + usersCount + reviewsCount === 0;
 
   return (
     <main className="pb-20">
       <HeroSection />
       <section className="container-shell space-y-8 py-10">
-        {databaseUnavailable ? (
-          <DatabaseUnavailableCard />
-        ) : null}
+        {databaseUnavailable ? <DatabaseUnavailableCard /> : null}
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Knjige v katalogu"
@@ -54,16 +70,16 @@ export default async function HomePage() {
           <Card>
             <CardHeader>
               <Badge variant="outline" className="w-fit">
-                Uporabniški tok
+                Uporabniski tok
               </Badge>
               <CardTitle className="mt-2">Od prijave do branja in recenzije</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
-              <p>Uporabnik pregleda katalog, odpre podrobnosti knjige, prebere vsebino in odda oceno z komentarjem.</p>
-              <p>Vse ocene se prikažejo skupaj s povprečjem, admin pa jih lahko pred objavo moderira.</p>
+              <p>Uporabnik pregleda katalog, odpre podrobnosti knjige, prebere vsebino in odda oceno s komentarjem.</p>
+              <p>Vse ocene se prikazejo skupaj s povprecjem, admin pa jih lahko pred objavo moderira.</p>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-secondary via-card to-accent/10">
+          <Card>
             <CardHeader>
               <Badge variant="outline" className="w-fit">
                 Administracija
@@ -72,11 +88,11 @@ export default async function HomePage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-muted-foreground">
-                Admin nadzoruje knjige, uporabnike, ocene in grafične prikaze uspešnosti kataloga.
+                Admin nadzoruje knjige, uporabnike, ocene in graficne prikaze uspesnosti kataloga.
               </p>
               <Button asChild className="gap-2">
-                <Link href={session?.user?.role === "ADMIN" ? "/admin" : "/books"}>
-                  {session?.user?.role === "ADMIN" ? "Odpri admin panel" : "Razišči katalog"}
+                <Link href="/books">
+                  Razisci katalog
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

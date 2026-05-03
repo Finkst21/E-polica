@@ -22,12 +22,12 @@ export default async function AdminBooksPage({
   const editBook = params.edit ? books.find((book) => book.id === params.edit) : undefined;
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <div className="space-y-3">
         <Badge variant="outline" className="w-fit">
           Upravljanje knjig
         </Badge>
-        <h1 className="font-serif text-4xl font-bold">Filtriranje, urejanje in sinhronizacija knjig</h1>
+        <h1 className="text-3xl font-bold">Knjige</h1>
       </div>
 
       <Card>
@@ -49,15 +49,15 @@ export default async function AdminBooksPage({
               name="search"
               defaultValue={params.search ?? ""}
               placeholder="Naslov, avtor ali zaloznik"
-              className="h-11 rounded-2xl border border-input bg-background px-4 text-sm"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
             />
-            <select name="sort" defaultValue={params.sort ?? "newest"} className="h-11 rounded-2xl border border-input bg-background px-4 text-sm">
+            <select name="sort" defaultValue={params.sort ?? "newest"} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="newest">Najnovejse</option>
               <option value="title">Po naslovu</option>
               <option value="rating">Po interni oceni</option>
               <option value="external">Po zunanji oceni</option>
             </select>
-            <select name="external" defaultValue={params.external ?? "all"} className="h-11 rounded-2xl border border-input bg-background px-4 text-sm">
+            <select name="external" defaultValue={params.external ?? "all"} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="all">Vse knjige</option>
               <option value="synced">Samo sinhronizirane</option>
               <option value="missing">Brez API podatkov</option>

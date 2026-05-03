@@ -15,14 +15,14 @@ export function StatCard({
 }) {
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold">{value}</p>
+            <p className="text-2xl font-semibold">{value}</p>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
-          <div className="rounded-2xl bg-secondary p-3">
+          <div className="rounded-md bg-secondary p-2">
             <Icon className="h-5 w-5 text-primary" />
           </div>
         </div>

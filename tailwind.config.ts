@@ -45,16 +45,8 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)"
       },
-      backgroundImage: {
-        "grid-fade":
-          "linear-gradient(to right, rgba(148,163,184,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.1) 1px, transparent 1px)"
-      },
-      boxShadow: {
-        glow: "0 20px 40px rgba(15, 23, 42, 0.15)"
-      },
       fontFamily: {
-        sans: ["var(--font-body)"],
-        serif: ["var(--font-heading)"]
+        sans: ["Arial", "Helvetica", "sans-serif"]
       }
     }
   },

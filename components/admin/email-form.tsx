@@ -34,7 +34,7 @@ export function EmailForm({
   }, [state]);
 
   return (
-    <form action={formAction} className="grid gap-4 rounded-[28px] border border-border/70 bg-card p-6">
+    <form action={formAction} className="grid gap-4 rounded-lg border border-border bg-card p-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="mode">Prejemniki</Label>

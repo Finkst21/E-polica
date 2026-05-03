@@ -28,7 +28,7 @@ export function ImportForm() {
   }, [state]);
 
   return (
-    <form action={formAction} className="grid gap-4 rounded-[28px] border border-border/70 bg-card p-6">
+    <form action={formAction} className="grid gap-4 rounded-lg border border-border bg-card p-4">
       <div className="space-y-2">
         <Label htmlFor="file">CSV ali Excel datoteka</Label>
         <Input id="file" name="file" type="file" accept=".csv,.xls,.xlsx" required />

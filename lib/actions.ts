@@ -1,7 +1,7 @@
 ﻿"use server";
 
 import bcrypt from "bcryptjs";
-import { EmailType, ImportFormat, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { signIn, signOut } from "@/auth";
@@ -21,6 +21,19 @@ function fileToDataUrl(file: File | null) {
     const base64 = Buffer.from(buffer).toString("base64");
     return `data:${file.type};base64,${base64}`;
   });
+}
+
+function serializeCategories(categories: string[]) {
+  return JSON.stringify(categories);
+}
+
+function parseStoredCategories(value: string) {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
 }
 
 function revalidateAdminPaths() {
@@ -68,7 +81,7 @@ export async function registerUser(_: unknown, formData: FormData) {
       "Dobrodosli",
       `<p>Racun za ${parsed.data.name} je uspesno ustvarjen. Zdaj lahko pregledujete knjige, berete vsebine in oddajate ocene.</p>`
     ),
-    type: EmailType.WELCOME
+    type: "WELCOME"
   });
 
   await signIn("credentials", {
@@ -118,10 +131,12 @@ export async function upsertBook(_: unknown, formData: FormData) {
     publisher: String(formData.get("publisher") ?? "").trim() || null,
     publishedDate: String(formData.get("publishedDate") ?? "").trim() || null,
     pageCount: formData.get("pageCount") ? Number(formData.get("pageCount")) : null,
-    categories: String(formData.get("categories") ?? "")
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
+    categories: serializeCategories(
+      String(formData.get("categories") ?? "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
   };
 
   if (bookId) {
@@ -211,7 +226,7 @@ export async function approveReview(formData: FormData) {
       "Ocena je objavljena",
       `<p>Admin je odobril tvojo oceno za knjigo <strong>${review.book.title}</strong>. Zdaj je vidna ostalim uporabnikom.</p>`
     ),
-    type: EmailType.REVIEW_APPROVED,
+    type: "REVIEW_APPROVED",
     triggeredById: session.user.id
   });
 
@@ -271,7 +286,9 @@ export async function syncBookExternalData(_: unknown, formData: FormData) {
       publisher: external.publisher ?? book.publisher,
       publishedDate: external.publishedDate ?? book.publishedDate,
       pageCount: external.pageCount ?? book.pageCount,
-      categories: external.categories.length > 0 ? external.categories : book.categories,
+      categories: serializeCategories(
+        external.categories.length > 0 ? external.categories : parseStoredCategories(book.categories)
+      ),
       externalSource: external.externalSource,
       externalId: external.externalId,
       externalRating: external.externalRating,
@@ -300,11 +317,11 @@ export async function importBooksFromFile(_: unknown, formData: FormData) {
   const extension = file.name.split(".").pop()?.toLowerCase();
   const format =
     extension === "csv"
-      ? ImportFormat.CSV
+      ? "CSV"
       : extension === "xlsx"
-        ? ImportFormat.XLSX
+        ? "XLSX"
         : extension === "xls"
-          ? ImportFormat.XLS
+          ? "XLS"
           : null;
 
   if (!format) {
@@ -331,7 +348,7 @@ export async function importBooksFromFile(_: unknown, formData: FormData) {
       publisher: row.publisher,
       publishedDate: row.publishedDate,
       pageCount: row.pageCount,
-      categories: row.categories
+      categories: serializeCategories(row.categories)
     };
 
     const existing = await prisma.book.findFirst({
@@ -426,7 +443,7 @@ export async function sendAdminEmail(_: unknown, formData: FormData) {
             .join("")
         ),
         text: parsed.data.body,
-        type: EmailType.MANUAL,
+        type: "MANUAL",
         triggeredById: session.user.id
       })
     )

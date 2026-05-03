@@ -34,7 +34,7 @@ export function ReviewForm({ bookId }: { bookId: string }) {
   }, [state]);
 
   return (
-    <form action={formAction} className="space-y-4 rounded-[28px] border border-border/70 bg-card/90 p-6">
+    <form action={formAction} className="space-y-4 rounded-lg border border-border bg-card p-4">
       <input type="hidden" name="bookId" value={bookId} />
       <input type="hidden" name="rating" value={rating} />
       <div className="space-y-2">

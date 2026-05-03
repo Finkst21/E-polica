@@ -11,18 +11,18 @@ export async function SiteHeader() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-      <div className="container-shell flex min-h-20 items-center justify-between gap-4">
+    <header className="border-b border-border bg-background">
+      <div className="container-shell flex min-h-16 items-center justify-between gap-4">
         <Logo />
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link className="text-sm font-medium text-muted-foreground transition hover:text-foreground" href="/">
+        <nav className="hidden items-center gap-4 md:flex">
+          <Link className="text-sm text-muted-foreground hover:text-foreground" href="/">
             Domov
           </Link>
-          <Link className="text-sm font-medium text-muted-foreground transition hover:text-foreground" href="/books">
+          <Link className="text-sm text-muted-foreground hover:text-foreground" href="/books">
             Knjige
           </Link>
           {isAdmin ? (
-            <Link className="text-sm font-medium text-muted-foreground transition hover:text-foreground" href="/admin">
+            <Link className="text-sm text-muted-foreground hover:text-foreground" href="/admin">
               Admin
             </Link>
           ) : null}

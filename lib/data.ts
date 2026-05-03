@@ -1,4 +1,4 @@
-import { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { subDays } from "date-fns";
 
 import { prisma } from "@/lib/prisma";
@@ -16,12 +16,38 @@ type AdminDashboardReview = Prisma.ReviewGetPayload<{
   };
 }>;
 
+type AdminUserTableItem = Prisma.UserGetPayload<{
+  include: {
+    _count: {
+      select: {
+        reviews: true;
+      };
+    };
+  };
+}>;
+
 function getDateFilter(days?: number) {
   if (!days || days <= 0) {
     return undefined;
   }
 
   return subDays(new Date(), days);
+}
+
+function parseCategories(value: string | string[]) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
+  } catch {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
 }
 
 export async function getBooks({
@@ -34,15 +60,15 @@ export async function getBooks({
   const where: Prisma.BookWhereInput = search
     ? {
         OR: [
-          { title: { contains: search, mode: "insensitive" } },
-          { author: { contains: search, mode: "insensitive" } },
-          { description: { contains: search, mode: "insensitive" } },
-          { publisher: { contains: search, mode: "insensitive" } }
+          { title: { contains: search } },
+          { author: { contains: search } },
+          { description: { contains: search } },
+          { publisher: { contains: search } }
         ]
       }
     : {};
 
-  const books = await prisma.book
+  const books: AdminDashboardBook[] = await prisma.book
     .findMany({
       where,
       include: {
@@ -56,6 +82,7 @@ export async function getBooks({
 
   const enriched = books.map((book) => ({
     ...book,
+    categories: parseCategories(book.categories),
     averageRating:
       book.reviews.length > 0
         ? book.reviews.reduce((total, review) => total + review.rating, 0) / book.reviews.length
@@ -96,6 +123,7 @@ export async function getBookById(id: string) {
 
   return {
     ...book,
+    categories: parseCategories(book.categories),
     approvedReviews,
     averageRating
   };
@@ -117,53 +145,55 @@ export async function getAdminDashboard(period = 30) {
     return [];
   };
 
-  books = await prisma.book
-    .findMany({
-      include: {
-        reviews: {
-          where: { approved: true }
-        }
-      },
-      orderBy: { createdAt: "desc" }
-    })
-    .catch(handleUnavailable);
-  users = await prisma.user
-    .findMany({
-      orderBy: { createdAt: "desc" }
-    })
-    .catch(handleUnavailable);
-  reviews = await prisma.review
-    .findMany({
-      include: {
-        book: true,
-        user: true
-      },
-      orderBy: { createdAt: "desc" }
-    })
-    .catch(handleUnavailable);
-  pendingReviews = await prisma.review
-    .findMany({
-      where: { approved: false },
-      include: {
-        book: true,
-        user: true
-      },
-      orderBy: { createdAt: "desc" },
-      take: 8
-    })
-    .catch(handleUnavailable);
-  emailLogs = await prisma.emailLog
-    .findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8
-    })
-    .catch(handleUnavailable);
-  importJobs = await prisma.importJob
-    .findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8
-    })
-    .catch(handleUnavailable);
+  [books, users, reviews, pendingReviews, emailLogs, importJobs] = await Promise.all([
+    prisma.book
+      .findMany({
+        include: {
+          reviews: {
+            where: { approved: true }
+          }
+        },
+        orderBy: { createdAt: "desc" }
+      })
+      .catch(handleUnavailable),
+    prisma.user
+      .findMany({
+        orderBy: { createdAt: "desc" }
+      })
+      .catch(handleUnavailable),
+    prisma.review
+      .findMany({
+        include: {
+          book: true,
+          user: true
+        },
+        orderBy: { createdAt: "desc" }
+      })
+      .catch(handleUnavailable),
+    prisma.review
+      .findMany({
+        where: { approved: false },
+        include: {
+          book: true,
+          user: true
+        },
+        orderBy: { createdAt: "desc" },
+        take: 8
+      })
+      .catch(handleUnavailable),
+    prisma.emailLog
+      .findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8
+      })
+      .catch(handleUnavailable),
+    prisma.importJob
+      .findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8
+      })
+      .catch(handleUnavailable)
+  ]);
 
   const filteredUsers = fromDate ? users.filter((user) => user.createdAt >= fromDate) : users;
   const filteredReviews = fromDate ? reviews.filter((review) => review.createdAt >= fromDate) : reviews;
@@ -214,6 +244,15 @@ export async function getAdminDashboard(period = 30) {
     value: filteredReviews.filter((review) => review.rating === rating).length
   }));
 
+  const bookRatingChart = topBooks
+    .filter((book) => book.ratingsCount > 0)
+    .slice(0, 6)
+    .map((book) => ({
+      title: book.title,
+      averageRating: book.averageRating,
+      ratingsCount: book.ratingsCount
+    }));
+
   return {
     stats: {
       booksCount: books.length,
@@ -227,6 +266,7 @@ export async function getAdminDashboard(period = 30) {
     },
     activity,
     reviewDistribution,
+    bookRatingChart,
     topBooks,
     pendingReviews,
     recentEmails: emailLogs,
@@ -237,7 +277,7 @@ export async function getAdminDashboard(period = 30) {
 
 export async function getAdminAnalytics(period = 30) {
   const fromDate = getDateFilter(period);
-  const books = await prisma.book
+  const books: AdminDashboardBook[] = await prisma.book
     .findMany({
       include: {
         reviews: {
@@ -291,9 +331,9 @@ export async function getAdminBooksTable({
       where: search
         ? {
             OR: [
-              { title: { contains: search, mode: "insensitive" } },
-              { author: { contains: search, mode: "insensitive" } },
-              { publisher: { contains: search, mode: "insensitive" } }
+              { title: { contains: search } },
+              { author: { contains: search } },
+              { publisher: { contains: search } }
             ]
           }
         : undefined,
@@ -304,10 +344,11 @@ export async function getAdminBooksTable({
       },
       orderBy: sort === "title" ? { title: "asc" } : { createdAt: "desc" }
     })
-    .catch(() => []);
+    .catch((): AdminDashboardBook[] => []);
 
   let items = books.map((book) => ({
     ...book,
+    categories: parseCategories(book.categories),
     averageRating:
       book.reviews.length > 0
         ? Number((book.reviews.reduce((sum, review) => sum + review.rating, 0) / book.reviews.length).toFixed(2))
@@ -340,18 +381,18 @@ export async function getAdminUsersTable({
   sort = "newest"
 }: {
   search?: string;
-  role?: "all" | Role;
+  role?: "all" | "USER" | "ADMIN";
   sort?: "newest" | "name" | "reviews";
 }) {
-  const users = await prisma.user
+  const users: AdminUserTableItem[] = await prisma.user
     .findMany({
       where: {
         ...(role !== "all" ? { role } : {}),
         ...(search
           ? {
               OR: [
-                { name: { contains: search, mode: "insensitive" } },
-                { email: { contains: search, mode: "insensitive" } }
+                { name: { contains: search } },
+                { email: { contains: search } }
               ]
             }
           : {})
@@ -363,7 +404,7 @@ export async function getAdminUsersTable({
       },
       orderBy: sort === "name" ? { name: "asc" } : { createdAt: "desc" }
     })
-    .catch(() => []);
+    .catch((): AdminUserTableItem[] => []);
 
   if (sort === "reviews") {
     return users.sort((a, b) => b._count.reviews - a._count.reviews);

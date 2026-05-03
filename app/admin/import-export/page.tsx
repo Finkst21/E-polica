@@ -22,17 +22,17 @@ export default async function AdminImportExportPage() {
     });
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <div className="space-y-3">
         <Badge variant="outline" className="w-fit">
           Uvoz in izvoz
         </Badge>
-        <h1 className="font-serif text-4xl font-bold">CSV, Excel in PDF porocila</h1>
+        <h1 className="text-3xl font-bold">Uvoz in izvoz</h1>
       </div>
 
       {databaseUnavailable ? <DatabaseUnavailableCard /> : null}
 
-      <section className="grid gap-6 xl:grid-cols-2">
+      <section className="grid gap-4 xl:grid-cols-2">
         <ImportForm />
         <Card>
           <CardHeader>

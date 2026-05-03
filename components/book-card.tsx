@@ -21,14 +21,14 @@ type BookCardProps = {
 
 export function BookCard({ book }: BookCardProps) {
   return (
-    <Card className="group overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="relative aspect-[3/4] overflow-hidden">
         {book.coverImage ? (
           <Image
             src={book.coverImage}
             alt={book.title}
             fill
-            className="object-cover transition duration-500 group-hover:scale-105"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-secondary">
@@ -36,15 +36,13 @@ export function BookCard({ book }: BookCardProps) {
           </div>
         )}
       </div>
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="font-serif text-2xl font-bold">{book.title}</h3>
-              <p className="text-sm text-muted-foreground">{book.author}</p>
-            </div>
-            <Badge>{book.ratingsCount} ocen</Badge>
+          <div>
+            <h3 className="text-lg font-semibold">{book.title}</h3>
+            <p className="text-sm text-muted-foreground">{book.author}</p>
           </div>
+          <Badge variant="outline">{book.ratingsCount} ocen</Badge>
           <p className="line-clamp-3 text-sm text-muted-foreground">{book.description}</p>
         </div>
         <div className="flex items-center justify-between">

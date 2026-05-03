@@ -1,13 +1,12 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
-import { BookOpenText, ChartColumnIncreasing, Mail, MessageSquareMore, Upload, Users } from "lucide-react";
+import { BookOpenText, MessageSquareMore, Star, Users } from "lucide-react";
 
-import { ActivityChart } from "@/components/admin/activity-chart";
-import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
+import { BookRatingsChart } from "@/components/admin/book-ratings-chart";
 import { ReviewDistributionChart } from "@/components/admin/review-distribution-chart";
 import { ReviewModeration } from "@/components/admin/review-moderation";
+import { DatabaseUnavailableCard } from "@/components/database-unavailable-card";
 import { StatCard } from "@/components/stat-card";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminDashboard } from "@/lib/data";
 
@@ -21,54 +20,50 @@ export default async function AdminPage({
   const dashboard = await getAdminDashboard(period);
 
   return (
-    <main className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-3">
-          <Badge variant="outline" className="w-fit">
-            Admin nadzorna plosca
-          </Badge>
-          <h1 className="font-serif text-4xl font-bold">Pregled najpomembnejsih podatkov</h1>
-          <p className="text-muted-foreground">Filtriran pregled vsebine, uporabnikov, ocen, emailov in uvozov.</p>
+    <main className="space-y-6">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Admin pregled</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Osnovni pregled knjig, uporabnikov in ocen v aplikaciji.
+          </p>
         </div>
-        <form className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-3">
-          <span className="text-sm text-muted-foreground">Obdobje</span>
-          <select name="period" defaultValue={String(period)} className="rounded-xl border border-input bg-background px-3 py-2 text-sm">
+
+        <form className="flex w-full gap-2 md:w-auto">
+          <select name="period" defaultValue={String(period)} className="h-10 flex-1 rounded-lg border border-input bg-background px-3 text-sm md:w-36">
             <option value="7">7 dni</option>
             <option value="30">30 dni</option>
             <option value="90">90 dni</option>
             <option value="365">365 dni</option>
           </select>
-          <button type="submit" className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            Uporabi
+          <button type="submit" className="h-10 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground">
+            Prikazi
           </button>
         </form>
       </div>
 
-      {dashboard.databaseUnavailable ? (
-        <DatabaseUnavailableCard />
-      ) : null}
+      {dashboard.databaseUnavailable ? <DatabaseUnavailableCard /> : null}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <StatCard title="Knjige" value={dashboard.stats.booksCount} description="Skupno knjig v katalogu." icon={BookOpenText} />
-        <StatCard title="Uporabniki" value={dashboard.stats.usersCount} description={`Novih v obdobju: ${dashboard.stats.periodUsers}.`} icon={Users} />
-        <StatCard title="Ocene" value={dashboard.stats.reviewsCount} description={`Novih v obdobju: ${dashboard.stats.periodReviews}.`} icon={MessageSquareMore} />
-        <StatCard title="Cakajoce ocene" value={dashboard.stats.pendingReviewsCount} description="Potrebujejo moderiranje." icon={ChartColumnIncreasing} />
-        <StatCard title="Poslana sporocila" value={dashboard.stats.emailsCount} description="Zabelezeni email dogodki." icon={Mail} />
-        <StatCard title="Uvozi" value={dashboard.stats.importsCount} description="Zadnji CSV/Excel uvozi." icon={Upload} />
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard title="Knjige" value={dashboard.stats.booksCount} description="Vse knjige v bazi." icon={BookOpenText} />
+        <StatCard title="Uporabniki" value={dashboard.stats.usersCount} description={`Novih: ${dashboard.stats.periodUsers}.`} icon={Users} />
+        <StatCard title="Ocene" value={dashboard.stats.reviewsCount} description={`Novih: ${dashboard.stats.periodReviews}.`} icon={MessageSquareMore} />
+        <StatCard title="Cakajoce" value={dashboard.stats.pendingReviewsCount} description="Ocene za pregled." icon={Star} />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-2">
-        <Card>
+      <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+        <Card className="rounded-lg shadow-none">
           <CardHeader>
-            <CardTitle>Aktivnost platforme</CardTitle>
+            <CardTitle className="text-xl">Povprecne ocene knjig</CardTitle>
           </CardHeader>
           <CardContent>
-            <ActivityChart data={dashboard.activity} />
+            <BookRatingsChart data={dashboard.bookRatingChart} />
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="rounded-lg shadow-none">
           <CardHeader>
-            <CardTitle>Porazdelitev ocen</CardTitle>
+            <CardTitle className="text-xl">Porazdelitev ocen</CardTitle>
           </CardHeader>
           <CardContent>
             <ReviewDistributionChart data={dashboard.reviewDistribution} />
@@ -76,74 +71,38 @@ export default async function AdminPage({
         </Card>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Najbolje ocenjene knjige</CardTitle>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/70 text-left text-muted-foreground">
-                  <th className="pb-3">Knjiga</th>
-                  <th className="pb-3">Interna ocena</th>
-                  <th className="pb-3">Zunanja ocena</th>
-                  <th className="pb-3">Ocene</th>
+      <Card className="rounded-lg shadow-none">
+        <CardHeader>
+          <CardTitle className="text-xl">Najbolje ocenjene knjige</CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-muted-foreground">
+                <th className="pb-3 font-medium">Knjiga</th>
+                <th className="pb-3 font-medium">Avtor</th>
+                <th className="pb-3 font-medium">Ocena</th>
+                <th className="pb-3 font-medium">Stevilo ocen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dashboard.topBooks.slice(0, 6).map((book) => (
+                <tr key={book.id} className="border-b border-border/60">
+                  <td className="py-3 font-medium">{book.title}</td>
+                  <td className="py-3 text-muted-foreground">{book.author}</td>
+                  <td className="py-3">{book.averageRating.toFixed(1)}</td>
+                  <td className="py-3">{book.ratingsCount}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {dashboard.topBooks.map((book) => (
-                  <tr key={book.id} className="border-b border-border/40">
-                    <td className="py-3">
-                      <div className="font-medium">{book.title}</div>
-                      <div className="text-muted-foreground">{book.author}</div>
-                    </td>
-                    <td className="py-3">{book.averageRating.toFixed(1)}</td>
-                    <td className="py-3">{book.hasExternal ? book.externalRating.toFixed(1) : "-"}</td>
-                    <td className="py-3">{book.ratingsCount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Zadnji email dogodki</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {dashboard.recentEmails.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-border/70 p-4">
-                  <p className="font-medium">{item.subject}</p>
-                  <p className="text-muted-foreground">{item.toEmail}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.status}</p>
-                </div>
               ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Zadnji uvozi</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {dashboard.recentImports.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-border/70 p-4">
-                  <p className="font-medium">{item.fileName}</p>
-                  <p className="text-muted-foreground">Dodani: {item.importedCount}, posodobljeni: {item.updatedCount}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
 
-      <section className="space-y-4">
-        <h2 className="font-serif text-3xl font-bold">Cakajoce ocene</h2>
+      <section className="space-y-3">
+        <h2 className="text-2xl font-bold">Cakajoce ocene</h2>
         <ReviewModeration reviews={dashboard.pendingReviews} />
       </section>
     </main>
   );
 }
-

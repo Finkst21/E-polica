@@ -24,7 +24,7 @@ export function BookFilters() {
   };
 
   return (
-    <div className="grid gap-4 rounded-[28px] border border-border/70 bg-card/90 p-5 shadow-sm md:grid-cols-[1fr_220px]">
+    <div className="grid gap-3 rounded-lg border border-border bg-card p-4 md:grid-cols-[1fr_200px]">
       <div className="relative">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input

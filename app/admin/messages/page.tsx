@@ -30,12 +30,12 @@ export default async function AdminMessagesPage() {
     .catch(handleUnavailable);
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <div className="space-y-3">
         <Badge variant="outline" className="w-fit">
           Sporocila
         </Badge>
-        <h1 className="font-serif text-4xl font-bold">Komunikacija s strankami</h1>
+        <h1 className="text-3xl font-bold">Sporocila</h1>
       </div>
 
       {databaseUnavailable ? <DatabaseUnavailableCard /> : null}

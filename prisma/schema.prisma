@@ -3,31 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum EmailStatus {
-  SENT
-  FAILED
-  SIMULATED
-}
-
-enum EmailType {
-  MANUAL
-  WELCOME
-  REVIEW_APPROVED
-}
-
-enum ImportFormat {
-  CSV
-  XLSX
-  XLS
 }
 
 model User {
@@ -35,7 +12,7 @@ model User {
   name           String?
   email          String      @unique
   password       String
-  role           Role        @default(USER)
+  role           String      @default("USER")
   accounts       Account[]
   sessions       Session[]
   reviews        Review[]
@@ -55,7 +32,7 @@ model Book {
   publisher            String?
   publishedDate        String?
   pageCount            Int?
-  categories           String[] @default([])
+  categories           String   @default("[]")
   externalSource       String?
   externalId           String?
   externalRating       Float?
@@ -123,8 +100,8 @@ model EmailLog {
   toEmail       String
   subject       String
   body          String
-  status        EmailStatus
-  type          EmailType
+  status        String
+  type          String
   errorMessage  String?
   triggeredById String?
   triggeredBy   User?       @relation("EmailTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
@@ -135,7 +112,7 @@ model EmailLog {
 model ImportJob {
   id            String       @id @default(cuid())
   fileName      String
-  format        ImportFormat
+  format        String
   importedCount Int          @default(0)
   updatedCount  Int          @default(0)
   skippedCount  Int          @default(0)
