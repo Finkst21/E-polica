@@ -1,6 +1,6 @@
 # E-polica
 
-Sodobna in odzivna spletna aplikacija za ocenjevanje in upravljanje knjig, zgrajena z `Next.js App Router`, `TypeScript`, `Tailwind CSS`, `Prisma`, `SQLite`, `Auth.js`, `Recharts` in komponentami v slogu `shadcn/ui`.
+Sodobna in odzivna spletna aplikacija za ocenjevanje in upravljanje knjig, zgrajena z `Next.js App Router`, `TypeScript`, `Tailwind CSS`, `Prisma`, `PostgreSQL`, `Auth.js`, `Recharts` in komponentami v slogu `shadcn/ui`.
 
 ## Funkcionalnosti
 
@@ -21,7 +21,7 @@ Sodobna in odzivna spletna aplikacija za ocenjevanje in upravljanje knjig, zgraj
 npm install
 ```
 
-3. Pripravi lokalno SQLite bazo:
+3. Pripravi PostgreSQL bazo:
 
 ```bash
 npm run db:setup
@@ -55,6 +55,24 @@ npm run dev
 - `DATABASE_URL`
 - `AUTH_SECRET`
 - `AUTH_URL`
+
+## Deploy na Vercel
+
+Za Vercel uporabi gostovano PostgreSQL bazo, na primer Vercel Postgres, Neon ali Supabase.
+
+V Vercel projektu nastavi:
+
+- `DATABASE_URL`: povezava do gostovane PostgreSQL baze
+- `AUTH_SECRET`: dolga nakljucna vrednost
+- `AUTH_URL`: URL tvoje Vercel aplikacije, na primer `https://ime-projekta.vercel.app`
+
+Build command v Vercelu nastavi na:
+
+```bash
+npm run vercel-build
+```
+
+Ta ukaz ustvari Prisma client, pripravi shemo v bazi, napolni zacetne knjige in nato zgradi aplikacijo.
 
 ## Opombe
 

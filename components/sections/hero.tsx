@@ -51,31 +51,37 @@ export function HeroSection({ featuredBooks }: HeroSectionProps) {
 
         <div className="relative min-h-[320px]">
           <div className="absolute inset-0 rounded-lg border border-border bg-background" />
-          <div className="relative grid h-full grid-cols-3 gap-3 p-4">
-            {previewBooks.map((book, index) => (
-              <Link
-                key={book.id}
-                href={`/books/${book.id}`}
-                className={`group relative overflow-hidden rounded-lg border border-border bg-secondary ${
-                  index === 1 ? "mt-8" : index === 2 ? "mt-16" : ""
-                }`}
-              >
-                <div className="relative aspect-[3/4]">
-                  {book.coverImage ? (
-                    <Image src={book.coverImage} alt={book.title} fill priority={index === 0} className="object-cover transition-transform duration-300 group-hover:scale-105" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
-                      {book.title}
-                    </div>
-                  )}
-                </div>
-                <div className="absolute inset-x-0 bottom-0 bg-background/95 p-3">
-                  <p className="line-clamp-2 text-sm font-semibold">{book.title}</p>
-                  <p className="line-clamp-1 text-xs text-muted-foreground">{book.author}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {previewBooks.length > 0 ? (
+            <div className="relative grid h-full grid-cols-3 gap-3 p-4">
+              {previewBooks.map((book, index) => (
+                <Link
+                  key={book.id}
+                  href={`/books/${book.id}`}
+                  className={`group relative overflow-hidden rounded-lg border border-border bg-secondary ${
+                    index === 1 ? "mt-8" : index === 2 ? "mt-16" : ""
+                  }`}
+                >
+                  <div className="relative aspect-[3/4]">
+                    {book.coverImage ? (
+                      <Image src={book.coverImage} alt={book.title} fill priority={index === 0} className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
+                        {book.title}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-background/95 p-3">
+                    <p className="line-clamp-2 text-sm font-semibold">{book.title}</p>
+                    <p className="line-clamp-1 text-xs text-muted-foreground">{book.author}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="relative flex h-full min-h-[320px] items-center justify-center p-8 text-center text-sm text-muted-foreground">
+              Knjige se bodo prikazale, ko bo baza povezana in napolnjena s podatki.
+            </div>
+          )}
         </div>
       </div>
     </section>

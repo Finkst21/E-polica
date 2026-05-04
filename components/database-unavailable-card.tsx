@@ -7,8 +7,12 @@ export function DatabaseUnavailableCard() {
         <CardTitle>Baza ni dosegljiva</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 text-sm text-muted-foreground">
-        <p>PostgreSQL ne tece na localhost:5432. Zazeni lokalno bazo in pripravi shemo:</p>
-        <code className="block rounded-lg bg-background p-3 text-foreground">npm run db:up &amp;&amp; npm run db:setup</code>
+        <p>
+          Aplikacija ne more dostopati do PostgreSQL baze. Na Vercelu nastavi
+          okoljsko spremenljivko DATABASE_URL na gostovano PostgreSQL povezavo
+          in pripravi shemo:
+        </p>
+        <code className="block rounded-lg bg-background p-3 text-foreground">npm run db:setup</code>
       </CardContent>
     </Card>
   );

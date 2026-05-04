@@ -10,8 +10,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:up": "echo SQLite baza ne potrebuje posebnega zagona.",
-    "db:setup": "prisma generate && node scripts/setup-sqlite.mjs && npm run seed",
+    "db:up": "echo Uporabi gostovano PostgreSQL bazo ali lokalni PostgreSQL.",
+    "db:push": "prisma db push",
+    "db:setup": "prisma generate && prisma db push && npm run seed",
+    "vercel-build": "prisma generate && prisma db push && npm run seed && next build",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts"
   },

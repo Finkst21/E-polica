@@ -44,8 +44,6 @@ export default async function HomePage() {
   ]);
 
   const featuredBooks = books.slice(0, 3);
-  databaseUnavailable = databaseUnavailable || booksCount + usersCount + reviewsCount === 0;
-
   return (
     <main className="pb-16">
       <HeroSection featuredBooks={featuredBooks} />
