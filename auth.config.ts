@@ -2,6 +2,9 @@ import type { NextAuthConfig } from "next-auth";
 
 const authConfig = {
   trustHost: true,
+  secret:
+    process.env.AUTH_SECRET ??
+    "e-polica-demo-auth-secret-change-this-in-vercel-production-2026",
   pages: {
     signIn: "/login"
   },
