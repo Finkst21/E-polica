@@ -1,13 +1,14 @@
 ﻿export const dynamic = "force-dynamic";
 
 import Image from "next/image";
+import Link from "next/link";
 import { CalendarDays, ExternalLink, Star, UserCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/auth";
-import { ReviewForm } from "@/components/reviews/review-form";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getBookById } from "@/lib/data";
@@ -19,8 +20,9 @@ export default async function BookDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const bookId = decodeURIComponent(id);
   const session = await auth();
-  const book = await getBookById(id);
+  const book = await getBookById(bookId);
 
   if (!book) {
     notFound();
@@ -68,11 +70,26 @@ export default async function BookDetailPage({
         </Card>
 
         {session?.user ? (
-          <ReviewForm bookId={book.id} />
+          <Card>
+            <CardContent className="space-y-3 p-4">
+              <div>
+                <h2 className="text-lg font-semibold">Oceni knjigo</h2>
+                <p className="text-sm text-muted-foreground">
+                  Oddaj zvezdice in kratek komentar za to knjigo.
+                </p>
+              </div>
+              <Button asChild className="w-full">
+                <Link href={`/books/${book.id}/rate`}>Odpri ocenjevanje</Link>
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           <Card>
-            <CardContent className="p-4 text-sm text-muted-foreground">
-              Za oddajo ocene se prijavi v sistem.
+            <CardContent className="space-y-3 p-4 text-sm text-muted-foreground">
+              <p>Za oddajo ocene se prijavi v sistem.</p>
+              <Button asChild className="w-full">
+                <Link href="/login">Prijava</Link>
+              </Button>
             </CardContent>
           </Card>
         )}
