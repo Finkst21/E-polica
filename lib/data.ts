@@ -136,8 +136,6 @@ export async function getAdminDashboard(period = 30) {
   let users: Prisma.UserGetPayload<Record<string, never>>[] = [];
   let reviews: AdminDashboardReview[] = [];
   let pendingReviews: AdminDashboardReview[] = [];
-  let emailLogs: Prisma.EmailLogGetPayload<Record<string, never>>[] = [];
-  let importJobs: Prisma.ImportJobGetPayload<Record<string, never>>[] = [];
   let databaseUnavailable = false;
 
   const handleUnavailable = () => {
@@ -145,7 +143,7 @@ export async function getAdminDashboard(period = 30) {
     return [];
   };
 
-  [books, users, reviews, pendingReviews, emailLogs, importJobs] = await Promise.all([
+  [books, users, reviews, pendingReviews] = await Promise.all([
     prisma.book
       .findMany({
         include: {
@@ -180,18 +178,6 @@ export async function getAdminDashboard(period = 30) {
         orderBy: { createdAt: "desc" },
         take: 8
       })
-      .catch(handleUnavailable),
-    prisma.emailLog
-      .findMany({
-        orderBy: { createdAt: "desc" },
-        take: 8
-      })
-      .catch(handleUnavailable),
-    prisma.importJob
-      .findMany({
-        orderBy: { createdAt: "desc" },
-        take: 8
-      })
       .catch(handleUnavailable)
   ]);
 
@@ -210,9 +196,7 @@ export async function getAdminDashboard(period = 30) {
         title: book.title,
         author: book.author,
         averageRating: Number(averageRating.toFixed(2)),
-        ratingsCount: book.reviews.length,
-        externalRating: book.externalRating ?? 0,
-        hasExternal: Boolean(book.externalSource)
+        ratingsCount: book.reviews.length
       };
     })
     .sort((a, b) => b.averageRating - a.averageRating)
@@ -259,8 +243,6 @@ export async function getAdminDashboard(period = 30) {
       usersCount: users.length,
       reviewsCount: reviews.length,
       pendingReviewsCount: pendingReviews.length,
-      emailsCount: emailLogs.length,
-      importsCount: importJobs.length,
       periodUsers: filteredUsers.length,
       periodReviews: filteredReviews.length
     },
@@ -269,8 +251,6 @@ export async function getAdminDashboard(period = 30) {
     bookRatingChart,
     topBooks,
     pendingReviews,
-    recentEmails: emailLogs,
-    recentImports: importJobs,
     databaseUnavailable
   };
 }
@@ -303,28 +283,23 @@ export async function getAdminAnalytics(period = 30) {
         id: book.id,
         title: book.title,
         averageRating: Number(averageRating.toFixed(2)),
-        externalRating: Number((book.externalRating ?? 0).toFixed(2)),
-        ratingsCount: book.reviews.length,
-        hasExternal: Boolean(book.externalSource)
+        ratingsCount: book.reviews.length
       };
     })
     .sort((a, b) => b.averageRating - a.averageRating);
 
   return {
     chartData: chartData.slice(0, 8),
-    comparisonData: chartData.filter((item) => item.hasExternal).slice(0, 8),
     bestRatedBooks: chartData.filter((item) => item.ratingsCount > 0).slice(0, 5)
   };
 }
 
 export async function getAdminBooksTable({
   search,
-  sort = "newest",
-  external = "all"
+  sort = "newest"
 }: {
   search?: string;
-  sort?: "newest" | "title" | "rating" | "external";
-  external?: "all" | "synced" | "missing";
+  sort?: "newest" | "title" | "rating";
 }) {
   const books = await prisma.book
     .findMany({
@@ -356,20 +331,8 @@ export async function getAdminBooksTable({
     ratingsCount: book.reviews.length
   }));
 
-  if (external === "synced") {
-    items = items.filter((book) => Boolean(book.externalSource));
-  }
-
-  if (external === "missing") {
-    items = items.filter((book) => !book.externalSource);
-  }
-
   if (sort === "rating") {
     items = items.sort((a, b) => b.averageRating - a.averageRating);
-  }
-
-  if (sort === "external") {
-    items = items.sort((a, b) => (b.externalRating ?? 0) - (a.externalRating ?? 0));
   }
 
   return items;

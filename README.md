@@ -1,6 +1,6 @@
-﻿# E-polica
+# E-polica
 
-Sodobna in odzivna spletna aplikacija za branje, ocenjevanje in upravljanje knjig, zgrajena z `Next.js App Router`, `TypeScript`, `Tailwind CSS`, `Prisma`, `PostgreSQL`, `Auth.js`, `Recharts` in komponentami v slogu `shadcn/ui`.
+Sodobna in odzivna spletna aplikacija za ocenjevanje in upravljanje knjig, zgrajena z `Next.js App Router`, `TypeScript`, `Tailwind CSS`, `Prisma`, `SQLite`, `Auth.js`, `Recharts` in komponentami v slogu `shadcn/ui`.
 
 ## Funkcionalnosti
 
@@ -8,10 +8,8 @@ Sodobna in odzivna spletna aplikacija za branje, ocenjevanje in upravljanje knji
 - javni katalog knjig z iskanjem, filtriranjem, branjem vsebine in prikazom povprecne ocene
 - ocenjevanje knjig, komentarji in moderiranje ocen
 - razsirjen admin panel z vizualizacijami, preglednicami, filtriranjem in sortiranjem
-- rocno emailing sporocil iz admin panela ter avtomatski emaili ob registraciji in odobritvi ocene
-- uvoz knjig v bazo prek `.csv`, `.xls` ali `.xlsx`
-- izvoz PDF porocil za knjige, uporabnike in ocene
-- zunanja dopolnitev podatkov knjig prek Google Books API
+- rocno dodajanje, urejanje in brisanje knjig
+- upravljanje uporabnikov in vlog
 - temni in svetli nacin
 
 ## Zagon
@@ -23,19 +21,13 @@ Sodobna in odzivna spletna aplikacija za branje, ocenjevanje in upravljanje knji
 npm install
 ```
 
-3. Zazeni lokalno PostgreSQL bazo:
-
-```bash
-npm run db:up
-```
-
-4. Posodobi shemo baze in zazeni seed:
+3. Pripravi lokalno SQLite bazo:
 
 ```bash
 npm run db:setup
 ```
 
-5. Zazeni razvojni streznik:
+4. Zazeni razvojni streznik:
 
 ```bash
 npm run dev
@@ -46,7 +38,7 @@ npm run dev
 - `admin@epolica.si` / `admin123`
 - `uporabnik@epolica.si` / `user123`
 
-## Ključne poti
+## Kljucne poti
 
 - `/`
 - `/books`
@@ -57,24 +49,15 @@ npm run dev
 - `/admin/books`
 - `/admin/users`
 - `/admin/analytics`
-- `/admin/messages`
-- `/admin/import-export`
 
 ## Okoljske spremenljivke
 
 - `DATABASE_URL`
 - `AUTH_SECRET`
 - `AUTH_URL`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
-- `GOOGLE_BOOKS_API_KEY`
 
 ## Opombe
 
-- naslovnica knjige se lahko doda prek URL-ja, nalaganja datoteke ali zunanjega API sync procesa
+- naslovnica knjige se lahko doda prek URL-ja ali nalaganja slike
 - admin poti so zascitene z `middleware.ts` in preverjanjem vloge `ADMIN`
 - aplikacija uporablja server komponente, kjer je to smiselno, CRUD tokovi pa tecejo prek server actions
-- ce SMTP ni nastavljen, se emaili ne posiljajo navzven, ampak se vseeno zabelezijo kot simulirani dogodki v bazi

@@ -16,8 +16,6 @@ model User {
   accounts       Account[]
   sessions       Session[]
   reviews        Review[]
-  emailLogs      EmailLog[]  @relation("EmailTriggeredBy")
-  importJobs     ImportJob[] @relation("ImportTriggeredBy")
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
@@ -33,12 +31,6 @@ model Book {
   publishedDate        String?
   pageCount            Int?
   categories           String   @default("[]")
-  externalSource       String?
-  externalId           String?
-  externalRating       Float?
-  externalRatingsCount Int?
-  externalInfoLink     String?
-  externalPreviewLink  String?
   reviews              Review[]
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
@@ -93,31 +85,4 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
-}
-
-model EmailLog {
-  id            String      @id @default(cuid())
-  toEmail       String
-  subject       String
-  body          String
-  status        String
-  type          String
-  errorMessage  String?
-  triggeredById String?
-  triggeredBy   User?       @relation("EmailTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
-  createdAt     DateTime    @default(now())
-  sentAt        DateTime?
-}
-
-model ImportJob {
-  id            String       @id @default(cuid())
-  fileName      String
-  format        String
-  importedCount Int          @default(0)
-  updatedCount  Int          @default(0)
-  skippedCount  Int          @default(0)
-  notes         String?
-  triggeredById String?
-  triggeredBy   User?        @relation("ImportTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
-  createdAt     DateTime     @default(now())
 }

@@ -1,7 +1,6 @@
 ﻿export const dynamic = "force-dynamic";
 
 import { AnalyticsChart } from "@/components/admin/analytics-chart";
-import { ExternalComparisonChart } from "@/components/admin/external-comparison-chart";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminAnalytics } from "@/lib/data";
@@ -38,24 +37,14 @@ export default async function AdminAnalyticsPage({
         </form>
       </div>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Povprecna interna ocena po knjigah</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AnalyticsChart data={analytics.chartData} />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Primerjava interne in zunanje ocene</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ExternalComparisonChart data={analytics.comparisonData} />
-          </CardContent>
-        </Card>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>Povprecna ocena po knjigah</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AnalyticsChart data={analytics.chartData} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -66,8 +55,7 @@ export default async function AdminAnalyticsPage({
             <thead>
               <tr className="border-b border-border/70 text-left text-muted-foreground">
                 <th className="pb-3">Knjiga</th>
-                <th className="pb-3">Interna ocena</th>
-                <th className="pb-3">Zunanja ocena</th>
+                <th className="pb-3">Povprecna ocena</th>
                 <th className="pb-3">Stevilo ocen</th>
               </tr>
             </thead>
@@ -76,7 +64,6 @@ export default async function AdminAnalyticsPage({
                 <tr key={book.id} className="border-b border-border/40">
                   <td className="py-3 font-medium">{book.title}</td>
                   <td className="py-3">{book.averageRating.toFixed(1)}</td>
-                  <td className="py-3">{book.hasExternal ? book.externalRating.toFixed(1) : "-"}</td>
                   <td className="py-3">{book.ratingsCount}</td>
                 </tr>
               ))}

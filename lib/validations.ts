@@ -31,11 +31,3 @@ export const reviewSchema = z.object({
     .optional()
     .or(z.literal(""))
 });
-
-export const adminEmailSchema = z.object({
-  mode: z.enum(["ALL_USERS", "ADMINS", "SINGLE", "CUSTOM"]),
-  userId: z.string().optional(),
-  email: z.string().optional(),
-  subject: z.string().min(3, "Zadeva mora vsebovati vsaj 3 znake."),
-  body: z.string().min(10, "Sporocilo mora vsebovati vsaj 10 znakov.")
-});

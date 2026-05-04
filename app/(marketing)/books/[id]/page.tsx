@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, ExternalLink, Star, UserCircle2 } from "lucide-react";
+import { CalendarDays, Star, UserCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 
@@ -50,7 +50,6 @@ export default async function BookDetailPage({
             <div className="flex flex-wrap gap-3">
               <Badge>{formatRating(book.averageRating)} / 5</Badge>
               <Badge variant="outline">{book.approvedReviews.length} objavljenih ocen</Badge>
-              {book.externalRating ? <Badge variant="outline">API {book.externalRating.toFixed(1)} / 5</Badge> : null}
             </div>
           </CardContent>
         </Card>
@@ -61,11 +60,6 @@ export default async function BookDetailPage({
             <p><strong>Datum izdaje:</strong> {book.publishedDate ?? "-"}</p>
             <p><strong>Stevilo strani:</strong> {book.pageCount ?? "-"}</p>
             <p><strong>Kategorije:</strong> {book.categories.length > 0 ? book.categories.join(", ") : "-"}</p>
-            {book.externalInfoLink ? (
-              <a href={book.externalInfoLink} target="_blank" className="inline-flex items-center gap-2 text-primary">
-                Zunanji vir <ExternalLink className="h-4 w-4" />
-              </a>
-            ) : null}
           </CardContent>
         </Card>
 

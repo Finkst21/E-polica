@@ -19,10 +19,7 @@ Ko se v mestu zacnejo pojavljati ljudje iz njene preteklosti, Lara spozna, da kn
     publisher: "Mestna zalozba",
     publishedDate: "2024",
     pageCount: 280,
-    categories: ["drama", "skrivnost"],
-    externalSource: "seed",
-    externalRating: 4.4,
-    externalRatingsCount: 128
+    categories: ["drama", "skrivnost"]
   },
   {
     title: "Atlas tihih oceanov",
@@ -39,10 +36,7 @@ Knjiga raziskuje, kako dalec lahko clovek odpluje, preden mora koncno pogledati 
     publisher: "Obzorja",
     publishedDate: "2022",
     pageCount: 336,
-    categories: ["roman", "potopis"],
-    externalSource: "seed",
-    externalRating: 4.1,
-    externalRatingsCount: 84
+    categories: ["roman", "potopis"]
   },
   {
     title: "Mesto iz papirja in dezja",
@@ -59,10 +53,7 @@ Roman zdruzuje intimno pripoved in fantasticno atmosfero v zgodbi o izbiri, spom
     publisher: "Aurora",
     publishedDate: "2023",
     pageCount: 304,
-    categories: ["fantazija", "roman"],
-    externalSource: "seed",
-    externalRating: 4.6,
-    externalRatingsCount: 201
+    categories: ["fantazija", "roman"]
   },
   {
     title: "Programerjev dnevnik",
@@ -77,10 +68,7 @@ Vsako poglavje zakljuci majhen izziv, ki bralca spodbuja k samostojnemu razmislj
     publisher: "Tehnicna zalozba",
     publishedDate: "2025",
     pageCount: 210,
-    categories: ["tehnologija", "ucenje"],
-    externalSource: "seed",
-    externalRating: 4.2,
-    externalRatingsCount: 67
+    categories: ["tehnologija", "ucenje"]
   },
   {
     title: "Zadnja postaja sever",
@@ -95,10 +83,7 @@ Pot proti severu razkrije, da ima vsak od njih razlog, da ne zeli prispeti prehi
     publisher: "Modra knjiga",
     publishedDate: "2021",
     pageCount: 248,
-    categories: ["pustolovscina", "roman"],
-    externalSource: "seed",
-    externalRating: 3.9,
-    externalRatingsCount: 53
+    categories: ["pustolovscina", "roman"]
   },
   {
     title: "Kuhinja spominov",
@@ -113,10 +98,7 @@ Ko se druzina ponovno zbere, morajo skupaj ugotoviti, katere zgodbe so vredne oh
     publisher: "Domus",
     publishedDate: "2020",
     pageCount: 192,
-    categories: ["druzina", "drama"],
-    externalSource: "seed",
-    externalRating: 4.0,
-    externalRatingsCount: 91
+    categories: ["druzina", "drama"]
   },
   {
     title: "Skrivnost starega mostu",
@@ -133,10 +115,7 @@ Na koncu ugotovijo, da skrivnost ni samo v skatli, ampak v odlocitvah ljudi, ki 
     publisher: "Mladika",
     publishedDate: "2024",
     pageCount: 224,
-    categories: ["mladinski roman", "detektivka"],
-    externalSource: "seed",
-    externalRating: 4.3,
-    externalRatingsCount: 76
+    categories: ["mladinski roman", "detektivka"]
   },
   {
     title: "Osnove spletnega razvoja",
@@ -153,10 +132,7 @@ Poseben poudarek je na razumljivi strukturi, cisti kodi in osnovah uporabniske i
     publisher: "Kodeks",
     publishedDate: "2025",
     pageCount: 268,
-    categories: ["tehnologija", "programiranje"],
-    externalSource: "seed",
-    externalRating: 4.5,
-    externalRatingsCount: 132
+    categories: ["tehnologija", "programiranje"]
   },
   {
     title: "Vrt za hiso",
@@ -173,10 +149,7 @@ Roman govori o potrpezljivosti, vsakdanjih skrbeh in majhnih dejanjih, ki spreme
     publisher: "Zelena veja",
     publishedDate: "2021",
     pageCount: 176,
-    categories: ["roman", "druzina"],
-    externalSource: "seed",
-    externalRating: 3.8,
-    externalRatingsCount: 45
+    categories: ["roman", "druzina"]
   },
   {
     title: "Pot skozi meglo",
@@ -193,10 +166,7 @@ Zgodba je napeta, a ostaja preprosta pripoved o odgovornosti in sodelovanju.`,
     publisher: "Planinska zalozba",
     publishedDate: "2023",
     pageCount: 156,
-    categories: ["pustolovscina", "mladinski roman"],
-    externalSource: "seed",
-    externalRating: 4.1,
-    externalRatingsCount: 64
+    categories: ["pustolovscina", "mladinski roman"]
   }
 ];
 

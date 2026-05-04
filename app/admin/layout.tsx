@@ -8,9 +8,7 @@ const links = [
   { href: "/admin", label: "Pregled" },
   { href: "/admin/books", label: "Knjige" },
   { href: "/admin/users", label: "Uporabniki" },
-  { href: "/admin/analytics", label: "Analitika" },
-  { href: "/admin/messages", label: "Sporocila" },
-  { href: "/admin/import-export", label: "Uvoz in izvoz" }
+  { href: "/admin/analytics", label: "Analitika" }
 ];
 
 export default async function AdminLayout({

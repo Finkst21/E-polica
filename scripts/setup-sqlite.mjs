@@ -24,12 +24,6 @@ const statements = [
     "publishedDate" TEXT,
     "pageCount" INTEGER,
     "categories" TEXT NOT NULL DEFAULT '[]',
-    "externalSource" TEXT,
-    "externalId" TEXT,
-    "externalRating" REAL,
-    "externalRatingsCount" INTEGER,
-    "externalInfoLink" TEXT,
-    "externalPreviewLink" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
   )`,
@@ -75,32 +69,7 @@ const statements = [
     "expires" DATETIME NOT NULL,
     PRIMARY KEY ("identifier", "token")
   )`,
-  `CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_token_key" ON "VerificationToken"("token")`,
-  `CREATE TABLE IF NOT EXISTS "EmailLog" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "toEmail" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "body" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "errorMessage" TEXT,
-    "triggeredById" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "sentAt" DATETIME,
-    CONSTRAINT "EmailLog_triggeredById_fkey" FOREIGN KEY ("triggeredById") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-  )`,
-  `CREATE TABLE IF NOT EXISTS "ImportJob" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "fileName" TEXT NOT NULL,
-    "format" TEXT NOT NULL,
-    "importedCount" INTEGER NOT NULL DEFAULT 0,
-    "updatedCount" INTEGER NOT NULL DEFAULT 0,
-    "skippedCount" INTEGER NOT NULL DEFAULT 0,
-    "notes" TEXT,
-    "triggeredById" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "ImportJob_triggeredById_fkey" FOREIGN KEY ("triggeredById") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-  )`
+  `CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_token_key" ON "VerificationToken"("token")`
 ];
 
 try {
