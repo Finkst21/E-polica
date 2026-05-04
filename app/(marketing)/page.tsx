@@ -13,22 +13,6 @@ import { getBooks } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { formatRating } from "@/lib/utils";
 
-async function withFallback<T>(promise: Promise<T>, fallback: T) {
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-
-  const timeoutPromise = new Promise<T>((resolve) => {
-    timeout = setTimeout(() => resolve(fallback), 1500);
-  });
-
-  return Promise.race([promise, timeoutPromise])
-    .catch(() => fallback)
-    .finally(() => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    });
-}
-
 export default async function HomePage() {
   let databaseUnavailable = false;
   const handleUnavailable = () => {
@@ -37,10 +21,10 @@ export default async function HomePage() {
   };
 
   const [booksCount, usersCount, reviewsCount, books] = await Promise.all([
-    withFallback(prisma.book.count().catch(handleUnavailable), 0),
-    withFallback(prisma.user.count().catch(handleUnavailable), 0),
-    withFallback(prisma.review.count().catch(handleUnavailable), 0),
-    withFallback(getBooks({ sort: "rating" }), [])
+    prisma.book.count().catch(handleUnavailable),
+    prisma.user.count().catch(handleUnavailable),
+    prisma.review.count().catch(handleUnavailable),
+    getBooks({ sort: "rating" })
   ]);
 
   const featuredBooks = books.slice(0, 3);
