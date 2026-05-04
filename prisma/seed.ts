@@ -214,7 +214,11 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@epolica.si" },
-    update: {},
+    update: {
+      name: "Admin",
+      password: adminPassword,
+      role: "ADMIN"
+    },
     create: {
       email: "admin@epolica.si",
       name: "Admin",
@@ -225,7 +229,11 @@ async function main() {
 
   const user = await prisma.user.upsert({
     where: { email: "uporabnik@epolica.si" },
-    update: {},
+    update: {
+      name: "Maja Bralka",
+      password: userPassword,
+      role: "USER"
+    },
     create: {
       email: "uporabnik@epolica.si",
       name: "Maja Bralka",
@@ -239,7 +247,9 @@ async function main() {
       prisma.user.upsert({
         where: { email: demoUser.email },
         update: {
-          name: demoUser.name
+          name: demoUser.name,
+          password: userPassword,
+          role: "USER"
         },
         create: {
           email: demoUser.email,
@@ -300,6 +310,22 @@ async function main() {
         approved: true
       }
     });
+  }
+
+  const [usersCount, booksCount, reviewsCount] = await Promise.all([
+    prisma.user.count(),
+    prisma.book.count(),
+    prisma.review.count()
+  ]);
+
+  console.log(
+    `Seed complete: ${usersCount} users, ${booksCount} books, ${reviewsCount} reviews.`
+  );
+
+  if (usersCount < 5 || booksCount < books.length || reviewsCount < reviewSeed.length) {
+    throw new Error(
+      `Seed failed: expected at least 5 users, ${books.length} books and ${reviewSeed.length} reviews.`
+    );
   }
 }
 
